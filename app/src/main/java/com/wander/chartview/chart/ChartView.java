@@ -192,8 +192,7 @@ public class ChartView extends View {
                 this.minValue = minValue;
                 this.spaceValue = (maxValue - minValue) / spaceSize;
             } else {
-//                Math.
-//                maxValue
+                maxValue = getMaxInt(maxValue);
                 this.maxValue = maxValue;
                 this.spaceValue = maxValue / spaceSize;
             }
@@ -202,6 +201,15 @@ public class ChartView extends View {
             twoTextLength = mTextPaint.measureText("00");
 
             return this;
+        }
+
+
+        public static float getMaxInt(float maxValue) {
+            int max = (int) maxValue;
+            String s = String.valueOf(max);
+            double pow = Math.pow(10, s.length() - 1);
+            int i = (int) (max / pow);
+            return (float) (i * pow);
         }
 
         public Builder setLineColor(int lineColor) {
