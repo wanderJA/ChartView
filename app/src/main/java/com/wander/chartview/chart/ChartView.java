@@ -166,11 +166,13 @@ public class ChartView extends View {
         public Builder setData(@NonNull List<T> data) {
             float maxValue = 0;
             float minValue = 0;
-            float spaceValue;
 
             this.data = data;
             if (data.size() > DEFAULT_ITEMS) {
                 this.data = data.subList(data.size() - 6, data.size());
+            }
+            if (data.size() >= 1) {
+                minValue = data.get(0).getMoney();
             }
             for (ChartData chartData : data) {
                 float money = chartData.getMoney();
@@ -185,11 +187,10 @@ public class ChartView extends View {
                     maxValue = money2;
                 }
             }
-            spaceValue = (maxValue - minValue) / spaceSize;
-            this.minValue = minValue;
             if (type == ChartView.LINE_CHART) {
                 this.maxValue = maxValue;
-                this.spaceValue = spaceValue;
+                this.minValue = minValue;
+                this.spaceValue = (maxValue - minValue) / spaceSize;
             } else {
 //                Math.
 //                maxValue
