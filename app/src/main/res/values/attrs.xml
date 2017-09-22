@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ChartView">
+        <attr name="chartType" format="enum">
+            <enum name="line" value="0" />
+            <enum name="bar" value="1" />
+        </attr>
+    </declare-styleable>
+</resources>

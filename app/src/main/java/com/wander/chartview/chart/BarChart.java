@@ -30,15 +30,11 @@ public class BarChart extends ChartBean {
 
     @Override
     protected void updateUI() {
-        startX = (int) (getDp(50) / 2);
-        startY = rulerSpaceY * 2 / 3;
-        lineStop = getWidth() - startX;
-        lineStart = startX + builder.maxTextLength;
-        rulerSpaceX = (int) ((lineStop - lineStart) / 6);
+        commonUpdate();
+        rulerSpaceX = (int) ((lineStop - lineStart) / builder.data.size());
         for (int i = 0; i < coordinates.length; i++) {
             coordinates[i] = ((int) (lineStart + rulerSpaceX * (4 * i + 1) / 4));
         }
-        initCurrentItem();
         //X轴
         int baseX = startY + builder.spaceSize * rulerSpaceY;
 

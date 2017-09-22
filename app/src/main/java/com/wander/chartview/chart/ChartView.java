@@ -1,6 +1,7 @@
 package com.wander.chartview.chart;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -14,6 +15,9 @@ import android.view.MotionEvent;
 import android.view.View;
 
 
+import com.wander.chartview.R;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,6 +31,7 @@ public class ChartView extends View {
     public static final int BAR_CHART = 2;
     private GestureDetector mGestureDetector;
     private OnItemSelectListener onItemSelectListener;
+    private int chartType = LINE_CHART;
 
 
     public ChartView(Context context) {
@@ -39,6 +44,11 @@ public class ChartView extends View {
 
     public ChartView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ChartView, defStyleAttr, 0);
+
+        chartType = a.getInt(R.styleable.ChartView_chartType, LINE_CHART);
+
+        a.recycle();
         init();
     }
 
@@ -48,6 +58,7 @@ public class ChartView extends View {
         mTextPaint.setColor(Color.WHITE);
         float textSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics());
         mTextPaint.setTextSize(textSize);
+        mChartBean = new ChartView.Builder(this).setData(new ArrayList()).build();
     }
 
     @Override
@@ -148,6 +159,20 @@ public class ChartView extends View {
         float textBaseLine;
         int spaceSize = 4;
 
+        public Builder(ChartView mChartView) {
+            this.mChartView = mChartView;
+            this.mContext = mChartView.getContext();
+            this.mTextPaint = mChartView.getTextPaint();
+            textHeight = mTextPaint.descent() - mTextPaint.ascent();
+            textBaseLine = -(mTextPaint.descent() + mTextPaint.ascent()) / 2;
+            indicatorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            indicatorPaint.setColor(lineColor);
+            indicatorPaint.setStyle(Paint.Style.FILL);
+            setType(mChartView.getChartType());
+            if (mChartBean != null)
+                mChartBean.setBuilder(this);
+        }
+
 
         public Builder(ChartView mChartView, int type) {
             this.mChartView = mChartView;
@@ -168,9 +193,9 @@ public class ChartView extends View {
             float minValue = 0;
 
             this.data = data;
-            if (data.size() > DEFAULT_ITEMS) {
-                this.data = data.subList(data.size() - 6, data.size());
-            }
+//            if (data.size() > DEFAULT_ITEMS) {
+//                this.data = data.subList(data.size() - 6, data.size());
+//            }
             if (data.size() >= 1) {
                 minValue = data.get(0).getMoney();
             }
@@ -208,7 +233,7 @@ public class ChartView extends View {
             int max = (int) maxValue;
             String s = String.valueOf(max);
             double pow = Math.pow(10, s.length() - 1);
-            int i = (int) (max / pow);
+            int i = (int) Math.round(max / pow);
             return (float) (i * pow);
         }
 
@@ -261,6 +286,15 @@ public class ChartView extends View {
         }
     }
 
+    public int getChartType() {
+        return chartType;
+    }
+
+    public ChartView setChartType(int chartType) {
+        this.chartType = chartType;
+        return this;
+    }
+
     public ChartBean getChartBean() {
         return mChartBean;
     }
@@ -276,7 +310,7 @@ public class ChartView extends View {
 
 
     public void onScroll(float distanceX) {
-        if (mChartBean != null && mChartBean.builder.data != null && mChartBean.builder.data.size() >= 6) {
+        if (mChartBean != null && mChartBean.builder.data != null && mChartBean.builder.data.size() >= 0) {
             mChartBean.updateX(distanceX);
             invalidate();
             if (onItemSelectListener != null) {

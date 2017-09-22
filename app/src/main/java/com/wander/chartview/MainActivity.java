@@ -32,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
         list.add(new ChartTest(45231.23f, 11232.33f, "2017.06"));
         list.add(new ChartTest(21231.23f, 12432.33f, "2017.07"));
         list.add(new ChartTest(12331.23f, 23232.33f, "2017.08"));
+        list.add(new ChartTest(19331.23f, 3232.33f, "2017.09"));
+        list.add(new ChartTest(29331.23f, 8232.33f, "2017.10"));
+        list.add(new ChartTest(39331.23f, 13232.33f, "2017.11"));
 
         new ChartView.Builder(chartView1, ChartView.LINE_CHART)
                 .setData(list)

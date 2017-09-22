@@ -12,7 +12,6 @@ import android.graphics.Shader;
 import android.text.TextPaint;
 import android.util.TypedValue;
 
-
 import java.text.DecimalFormat;
 
 /**
@@ -38,7 +37,7 @@ public abstract class ChartBean<T extends ChartData> {
     /**
      * x 坐标位置
      */
-    int[] coordinates = new int[ChartView.Builder.DEFAULT_ITEMS];
+    int[] coordinates;
     DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
     RectF tempRectF = new RectF();
     Paint linePaint;
@@ -84,22 +83,28 @@ public abstract class ChartBean<T extends ChartData> {
     }
 
     protected void updateUI() {
+        commonUpdate();
+        rulerSpaceX = (int) ((lineStop - lineStart) / (builder.data.size() - 1));
+        for (int i = 0; i < coordinates.length; i++) {
+            coordinates[i] = ((int) (lineStart + rulerSpaceX * i));
+        }
+    }
+
+    protected void commonUpdate() {
+        coordinates = new int[builder.data.size()];
         startX = (int) (getDp(50) / 2);
         startY = rulerSpaceY * 2 / 3;
         lineStop = getWidth() - startX;
         lineStart = startX + builder.maxTextLength;
-        rulerSpaceX = (int) ((lineStop - lineStart) / 5);
-        for (int i = 0; i < coordinates.length; i++) {
-            coordinates[i] = ((int) (lineStart + rulerSpaceX * i));
-        }
         initCurrentItem();
     }
 
     void initCurrentItem() {
-        currentPosition = 5;
-        if (builder.data != null && builder.data.size() >= 6) {
-            currentData = builder.data.get(5);
+        if (builder.data.isEmpty()) {
+            return;
         }
+        currentPosition = builder.data.size() - 1;
+        currentData = builder.data.get(currentPosition);
         OnItemSelectListener onItemSelectListener = builder.mChartView.getOnItemSelectListener();
         if (onItemSelectListener != null) {
             onItemSelectListener.onSelect(currentData, currentPosition);
@@ -120,7 +125,7 @@ public abstract class ChartBean<T extends ChartData> {
 
     public void setWidth(int width) {
         this.width = width;
-        if (builder != null) {
+        if (builder.data != null) {
             updateUI();
         }
         onWidthChange(width);
@@ -142,8 +147,8 @@ public abstract class ChartBean<T extends ChartData> {
             }
         }
         if (distanceX >= coordinates[coordinates.length - 1] + rulerSpaceX / 2) {
-            currentPosition = 5;
-            currentData = builder.data.get(5);
+            currentPosition = builder.data.size() - 1;
+            currentData = builder.data.get(currentPosition);
         }
     }
 
